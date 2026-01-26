@@ -1,0 +1,76 @@
+package hu.progmasters.card;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Suit enum
+ */
+enum Suit {
+    SPADE,
+    DIAMOND,
+    CLUB,
+    HEART
+}
+
+/**
+ * Rank enum
+ */
+enum Rank {
+    ACE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE,
+    SIX,
+    SEVEN,
+    EIGHT,
+    NINE,
+    TEN,
+    JACK,
+    QUEEN,
+    KING
+}
+
+/**
+ * Card class
+ */
+public class Card {
+
+    private Suit suit;
+    private Rank rank;
+
+    public Card(Suit suit, Rank rank) {
+        this.suit = suit;
+        this.rank = rank;
+    }
+
+    @Override
+    public String toString() {
+        return rank + " of " + suit;
+    }
+}
+
+/**
+ * Deck class using ArrayList
+ */
+class Deck {
+
+    private List<Card> cards;
+
+    public Deck() {
+        cards = new ArrayList<>();
+
+        for (Suit suit : Suit.values()) {
+            for (Rank rank : Rank.values()) {
+                cards.add(new Card(suit, rank));
+            }
+        }
+    }
+
+    public void print() {
+        for (Card card : cards) {
+            System.out.println(card);
+        }
+    }
+}
