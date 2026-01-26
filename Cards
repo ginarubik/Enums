@@ -1,8 +1,5 @@
 package hu.progmasters.card;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Suit enum
  */
@@ -52,25 +49,27 @@ public class Card {
 }
 
 /**
- * Deck class using ArrayList
+ * Deck class
  */
 class Deck {
 
-    private List<Card> cards;
+    private Card[] cards;
 
     public Deck() {
-        cards = new ArrayList<>();
+        cards = new Card[52];
 
+        int i = 0;
         for (Suit suit : Suit.values()) {
             for (Rank rank : Rank.values()) {
-                cards.add(new Card(suit, rank));
+                cards[i] = new Card(suit, rank);
+                i++;
             }
         }
     }
 
     public void print() {
-        for (Card card : cards) {
-            System.out.println(card);
+        for (int i = 0; i < cards.length; i++) {
+            System.out.println(cards[i]);
         }
     }
 }
