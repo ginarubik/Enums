@@ -1,0 +1,141 @@
+
+packagehu.progmasters.pizza;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
+// JUnit 5 No Duplicates, Exceptions Tested
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Pizza capricciosa = new Capricciosa();
+
+        Pizza customPizza = new CustomPizza(
+                "My Special Pizza",
+                List.of(Topping.CHEESE, Topping.BACON)
+        );
+
+        printPizza(capricciosa);
+        printPizza(customPizza);
+
+        // Uncomment to see exception
+        // customPizza.addTopping(Topping.CHEESE);
+    }
+
+    private static void printPizza(Pizza pizza) {
+        System.out.println("Pizza name: " + pizza.getName());
+        System.out.println("Toppings: " + pizza.getToppingList());
+        System.out.println();
+    }
+}
+
+/* ===================== ENUM ===================== */
+
+enum Topping {
+    TOMATO, BACON, ONION, PARMESAN, BASIL, CHEESE, HAM, MUSHROOM
+}
+
+/* ===================== ABSTRACT CLASS ===================== */
+
+abstract class Pizza {
+
+    private String name;
+
+    // final: reference never changes
+    private final Set<Topping> toppingSet = EnumSet.noneOf(Topping.class);
+
+    public final void addTopping(Topping topping) {
+        if (!toppingSet.add(topping)) {
+            throw new IllegalArgumentException(
+                    "Topping already added: " + topping
+            );
+        }
+    }
+
+    public final String getName() {
+        return name;
+    }
+
+    protected final void setName(String name) {
+        this.name = name;
+    }
+
+    public final List<Topping> getToppingList() {
+        return new ArrayList<>(toppingSet);
+    }
+
+    protected final void setToppingList(List<Topping> toppings) {
+        toppingSet.clear();
+        for (Topping topping : toppings) {
+            addTopping(topping); // reuse duplicate check
+        }
+    }
+}
+
+/* ===================== PREDEFINED PIZZA ===================== */
+
+final class Capricciosa extends Pizza {
+
+    Capricciosa() {
+        setName("Capricciosa");
+        addTopping(Topping.HAM);
+        addTopping(Topping.MUSHROOM);
+        addTopping(Topping.CHEESE);
+    }
+}
+
+/* ===================== CUSTOM PIZZA ===================== */
+
+final class CustomPizza extends Pizza {
+
+    CustomPizza(String name, List<Topping> toppingList) {
+        setName(name);
+        setToppingList(toppingList);
+    }
+}
+
+/* ===================== UNIT TESTS ===================== */
+
+class PizzaTest {
+
+    @Test
+    void addingDuplicateToppingThrowsException() {
+        Pizza pizza = new CustomPizza(
+                "Test",
+                List.of(Topping.CHEESE)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> pizza.addTopping(Topping.CHEESE)
+        );
+    }
+
+    @Test
+    void duplicateInConstructorThrowsException() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new CustomPizza(
+                        "Test",
+                        List.of(Topping.BACON, Topping.BACON)
+                )
+        );
+    }
+
+    @Test
+    void capricciosaHasCorrectToppings() {
+        Pizza pizza = new Capricciosa();
+
+        assertEquals(3, pizza.getToppingList().size());
+        assertTrue(pizza.getToppingList().contains(Topping.HAM));
+        assertTrue(pizza.getToppingList().contains(Topping.MUSHROOM));
+        assertTrue(pizza.getToppingList().contains(Topping.CHEESE));
+    }
+}
