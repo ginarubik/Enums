@@ -1,8 +1,5 @@
 package hu.progmasters.card;
 
-/**
- * Suit enum
- */
 enum Suit {
     SPADE,
     DIAMOND,
@@ -10,9 +7,6 @@ enum Suit {
     HEART
 }
 
-/**
- * Rank enum
- */
 enum Rank {
     ACE,
     TWO,
@@ -29,9 +23,6 @@ enum Rank {
     KING
 }
 
-/**
- * Card class
- */
 public class Card {
 
     private Suit suit;
@@ -48,9 +39,6 @@ public class Card {
     }
 }
 
-/**
- * Deck class
- */
 class Deck {
 
     private Card[] cards;
