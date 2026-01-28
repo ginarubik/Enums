@@ -2,7 +2,7 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/* ===================== MAIN CODE ===================== */
+//MAIN:
 
 abstract class Citizen {
     private String name;
@@ -178,7 +178,7 @@ class SinCity {
     }
 }
 
-/* ===================== TESTS ===================== */
+// UNIT TESTS 
 
 public class SinCityTest {
 
