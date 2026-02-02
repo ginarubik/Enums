@@ -1,1 +1,190 @@
 
+import java.util.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+//I.Main:
+
+public class CasinoGame {
+
+    public static void main(String[] args) {
+        Table table = new Table();
+
+        Player p1 = new Beginner();
+        Player p2 = new Robot();
+        Player p3 = new Beginner();
+
+        table.addPlayer(p1);
+        table.addPlayer(p2);
+        table.addPlayer(p3);
+
+        table.newGame();
+
+        for (int i = 0; i < 3; i++) {
+            table.processRound();
+        }
+
+        // Optional finalize demo
+        table = null;
+        System.gc();
+    }
+}
+
+//II. Table:
+
+class Table {
+    private static final int MAX_PLAYERS = 10;
+
+    private List<Player> players = new ArrayList<>();
+    private int stake = 0;
+    private int roundNumber = 0;
+
+    public void addPlayer(Player player) {
+        if (players.size() < MAX_PLAYERS) {
+            players.add(player);
+            player.setTable(this);
+        }
+    }
+
+    public void newGame() {
+        stake = 0;
+        roundNumber = 0;
+    }
+
+    public void processRound() {
+        if (players.isEmpty()) {
+            throw new NoPlayerException("No players at the table!");
+        }
+
+        roundNumber++;
+        for (Player p : players) {
+            p.makeMove();
+        }
+        System.out.println("Stake after round " + roundNumber + ": " + stake);
+    }
+
+    public int getRoundNumber() {
+        return roundNumber;
+    }
+
+    public void raise() {
+        stake++;
+    }
+
+    public int getStake() {
+        return stake;
+    }
+}
+
+// III.Player:
+
+abstract class Player {
+    private static int counter = 1;
+    private final int id;
+    protected Table table;
+
+    public Player() {
+        this.id = counter++;
+    }
+
+    public void setTable(Table table) {
+        this.table = table;
+    }
+
+    public abstract void makeMove();
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " " + id;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("Finalizing player: " + id + " -> " + toString());
+    }
+}
+
+//IV. Beginner:
+
+class Beginner extends Player {
+
+    @Override
+    public void makeMove() {
+        int round = table.getRoundNumber();
+        System.out.println(this + " round " + round);
+
+        if (round % 2 == 0) {
+            table.raise();
+        }
+    }
+}
+
+//V. Robot:
+
+class Robot extends Player {
+
+    @Override
+    public void makeMove() {
+        int round = table.getRoundNumber();
+        System.out.println(this + " round " + round);
+        // always pass
+    }
+}
+
+//Exception:
+
+class NoPlayerException extends RuntimeException {
+    public NoPlayerException(String message) {
+        super(message);
+    }
+}
+
+//Unit Tests:
+
+class CasinoGameTest {
+
+    @Test
+    void testBeginnerRaisesOnEvenRounds() {
+        Table table = new Table();
+        Player beginner = new Beginner();
+
+        table.addPlayer(beginner);
+        table.newGame();
+
+        table.processRound(); // round 1 -> pass
+        assertEquals(0, table.getStake());
+
+        table.processRound(); // round 2 -> raise
+        assertEquals(1, table.getStake());
+    }
+
+    @Test
+    void testRobotNeverRaises() {
+        Table table = new Table();
+        Player robot = new Robot();
+
+        table.addPlayer(robot);
+        table.newGame();
+
+        table.processRound();
+        table.processRound();
+
+        assertEquals(0, table.getStake());
+    }
+
+    @Test
+    void testPlayerIdentifiersIncrement() {
+        Player p1 = new Beginner();
+        Player p2 = new Robot();
+
+        assertNotEquals(p1.toString(), p2.toString());
+    }
+
+    @Test
+    void testNoPlayerException() {
+        Table table = new Table();
+        table.newGame();
+
+        assertThrows(NoPlayerException.class, table::processRound);
+    }
+}
